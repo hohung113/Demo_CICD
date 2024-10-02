@@ -37,7 +37,7 @@ jobs:
         run: dotnet build ./CICD/RazorPagesLab.sln --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./CICD/RazorPagesLab.sln -c Release -o ${{ env.DOTNET_ROOT }}/CICD
+        run: dotnet publish ./CICD/RazorPagesLab.sln -c Release -o ${{ env.DOTNET_ROOT }}/CICD/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
