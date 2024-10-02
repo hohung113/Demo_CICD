@@ -2,8 +2,8 @@ name: Build and deploy ASP.Net Core app to an Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: ASS02CICD    # set this to the name of your Azure Web App
-  AZURE_WEBAPP_PACKAGE_PATH: './CICD/publish'   # Make sure this matches your publish path
-  DOTNET_VERSION: '8.0.x'         # set this to the .NET Core version to use
+  AZURE_WEBAPP_PACKAGE_PATH: './CICD/publish'
+  DOTNET_VERSION: '8.0.x'                 # set this to the .NET Core version to use
 
 on:
   push:
@@ -34,16 +34,16 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build ./CICD/RazorPagesLab.sln --configuration Release
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./CICD/RazorPagesLab.sln -c Release -o ./CICD/publish  # Use relative path
+        run: dotnet publish -c Release -o ${{ env.DOTNET_ROOT }}/CICD
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ./CICD/publish  # Ensure this matches your publish path
+          path: ${{ env.DOTNET_ROOT }}/CICD
 
   deploy:
     permissions:
@@ -56,4 +56,14 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: .net-app
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          package: .
