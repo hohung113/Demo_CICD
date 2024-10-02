@@ -1,0 +1,2 @@
+# Demo_CICD
+Demo CICD WITH MVC RAZOR PAGE
